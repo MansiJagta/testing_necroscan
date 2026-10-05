@@ -1,0 +1,35 @@
+1. Copy repo_api_extractor/ into your Backend directory.
+
+2. In your FastAPI main application add:
+
+from repo_api_extractor.router import router as repository_router
+
+app.include_router(repository_router)
+
+3. Rebuild the backend image:
+
+docker compose build backend
+
+4. Start the stack:
+
+docker compose up -d
+
+5. Test:
+
+POST http://localhost:8000/api/repository/scan
+
+JSON:
+{
+  "repo_url": "https://github.com/owner/repository"
+}
+
+IMPORTANT:
+If the scan is moved into your existing Celery repository_scan_task, import and call:
+
+from repo_api_extractor.scanner import scan_repository
+
+result = scan_repository(repo_url)
+
+Then persist `result["apis"]` into your existing PostgreSQL models.
+
+Do not create a second Celery worker just for this module.
